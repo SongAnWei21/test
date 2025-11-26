@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的照片与视频展示</title>
+    <title>媒体内容展示 - 点击放大</title>
     <style>
         * {
             margin: 0;
@@ -35,15 +35,8 @@
             font-size: 2.5rem;
             color: #2c3e50;
             margin-bottom: 10px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
         }
         
-        .subtitle {
-            font-size: 1.1rem;
-            color: #7f8c8d;
-        }
-        
-        /* 内容网格布局 */
         .content-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -51,13 +44,14 @@
             margin-bottom: 40px;
         }
         
-        /* 媒体卡片通用样式 */
+        /* 媒体卡片样式 */
         .media-card {
             background: white;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
         }
         
         .media-card:hover {
@@ -66,7 +60,7 @@
         }
         
         .card-header {
-            padding: 20px;
+            padding: 15px 20px;
             background: #3498db;
             color: white;
             text-align: center;
@@ -74,42 +68,58 @@
         
         .card-content {
             padding: 0;
+            position: relative;
         }
         
-        /* 图片样式 */
-        .image-container {
+        /* 封面容器 */
+        .cover-container {
             width: 100%;
-            height: 300px;
+            height: 250px;
             overflow: hidden;
+            position: relative;
         }
         
-        .image-container img {
+        .cover-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
         
-        .media-card:hover .image-container img {
+        .media-card:hover .cover-container img {
             transform: scale(1.05);
         }
         
-        /* 视频样式 */
-        .video-container {
-            width: 100%;
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 宽高比 */
-            height: 0;
-            overflow: hidden;
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
-        .video-container video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .video-card .play-icon {
+            opacity: 1; /* 视频卡片始终显示播放图标 */
+        }
+        
+        .media-card:hover .play-icon {
+            opacity: 1;
+        }
+        
+        .play-icon::after {
+            content: '';
+            border-style: solid;
+            border-width: 10px 0 10px 20px;
+            border-color: transparent transparent transparent white;
+            margin-left: 5px;
         }
         
         .card-footer {
@@ -118,6 +128,76 @@
             text-align: center;
             color: #666;
             font-size: 0.9rem;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .modal-content video {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            transition: color 0.3s ease;
+        }
+        
+        .close:hover {
+            color: #bbb;
+        }
+        
+        .modal-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         /* 响应式设计 */
@@ -131,19 +211,13 @@
                 font-size: 2rem;
             }
             
-            .image-container {
-                height: 250px;
+            .cover-container {
+                height: 200px;
             }
-        }
-        
-        /* 底部信息 */
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            border-top: 1px solid #eee;
-            margin-top: 40px;
+            
+            .modal-content {
+                width: 95%;
+            }
         }
     </style>
 </head>
@@ -151,64 +225,175 @@
     <div class="container">
         <header>
             <h1>📷 我的媒体收藏</h1>
-            <p class="subtitle">精彩瞬间，永恒记忆</p>
+            <p>点击封面查看大图或播放视频</p>
         </header>
         
         <main>
             <div class="content-grid">
                 <!-- 第一张照片 -->
-                <div class="media-card">
+                <div class="media-card image-card" data-type="image" data-src="p1.jpg" data-title="第一张照片 - 美丽风景">
                     <div class="card-header">
                         <h2>照片一</h2>
                     </div>
                     <div class="card-content">
-                        <div class="image-container">
-                            <img src="/test/p1.jpg" alt="第一张照片描述" loading="lazy">
+                        <div class="cover-container">
+                            <img src="p1.jpg" alt="第一张照片封面" loading="lazy">
+                            <div class="play-icon"></div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <p>美好的瞬间，值得珍藏</p>
+                        <p>点击查看大图</p>
                     </div>
                 </div>
                 
                 <!-- 第二张照片 -->
-                <div class="media-card">
+                <div class="media-card image-card" data-type="image" data-src="p2.jpg" data-title="第二张照片 - 城市风光">
                     <div class="card-header">
                         <h2>照片二</h2>
                     </div>
                     <div class="card-content">
-                        <div class="image-container">
-                            <img src="/test/p2.jpg" alt="第二张照片描述" loading="lazy">
+                        <div class="cover-container">
+                            <img src="p2.jpg" alt="第二张照片封面" loading="lazy">
+                            <div class="play-icon"></div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <p>难忘的时刻，永恒回忆</p>
+                        <p>点击查看大图</p>
                     </div>
                 </div>
                 
                 <!-- 视频 -->
-                <div class="media-card">
+                <div class="media-card video-card" data-type="video" data-src="v1.mp4" data-title="精彩视频展示" data-poster="p1.jpg">
                     <div class="card-header">
                         <h2>精彩视频</h2>
                     </div>
                     <div class="card-content">
-                        <div class="video-container">
-                            <video controls poster="p1.jpg">
-                                <source src="/test/v1.mp4" type="video/mp4">
-                                您的浏览器不支持视频播放功能。
-                            </video>
+                        <div class="cover-container">
+                            <!-- 使用第一张图片作为视频封面 -->
+                            <img src="p1.jpg" alt="视频封面" loading="lazy">
+                            <div class="play-icon"></div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <p>点击播放按钮观看视频</p>
+                        <p>点击播放视频</p>
                     </div>
                 </div>
             </div>
         </main>
-        
-        <footer>
-            <p>© 2025 我的媒体展示 | 使用 HTML5 & CSS3 构建</p>
-        </footer>
     </div>
+
+    <!-- 模态框 -->
+    <div id="mediaModal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-content" id="modalContent">
+            <!-- 内容将通过JavaScript动态添加 -->
+        </div>
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
+
+    <script>
+        // 获取模态框元素
+        const mediaModal = document.getElementById('mediaModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalCaption = document.getElementById('modalCaption');
+        const closeBtn = document.querySelector('.close');
+        
+        // 为所有媒体卡片添加点击事件
+        document.querySelectorAll('.media-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                const src = this.getAttribute('data-src');
+                const title = this.getAttribute('data-title');
+                const poster = this.getAttribute('data-poster');
+                
+                // 清空模态框内容
+                modalContent.innerHTML = '';
+                
+                if (type === 'image') {
+                    // 显示图片
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = title;
+                    modalContent.appendChild(img);
+                } else if (type === 'video') {
+                    // 显示视频
+                    const video = document.createElement('video');
+                    video.src = src;
+                    video.controls = true;
+                    video.autoplay = true;
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    
+                    // 设置视频封面
+                    if (poster) {
+                        video.poster = poster;
+                    }
+                    
+                    modalContent.appendChild(video);
+                }
+                
+                // 设置标题
+                modalCaption.textContent = title;
+                
+                // 显示模态框
+                mediaModal.style.display = 'block';
+                
+                // 阻止事件冒泡，避免点击模态框内容时关闭模态框
+                modalContent.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        });
+        
+        // 关闭模态框
+        closeBtn.addEventListener('click', function() {
+            closeModal();
+        });
+        
+        // 点击模态框背景关闭
+        mediaModal.addEventListener('click', function(e) {
+            if (e.target === mediaModal) {
+                closeModal();
+            }
+        });
+        
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+        
+        // 关闭模态框的函数
+        function closeModal() {
+            mediaModal.style.display = 'none';
+            
+            // 停止视频播放
+            const video = modalContent.querySelector('video');
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+            }
+        }
+        
+        // 预加载关键资源
+        function preloadCriticalResources() {
+            const criticalResources = [
+                'p1.jpg',
+                'p2.jpg'
+            ];
+            
+            criticalResources.forEach(resource => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.href = resource;
+                link.as = 'image';
+                document.head.appendChild(link);
+            });
+        }
+        
+        // 页面加载完成后执行预加载
+        document.addEventListener('DOMContentLoaded', preloadCriticalResources);
+    </script>
 </body>
 </html>
