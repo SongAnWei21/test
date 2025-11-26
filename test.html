@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的照片与视频展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+        
+        /* 内容网格布局 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        /* 媒体卡片通用样式 */
+        .media-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .media-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            padding: 20px;
+            background: #3498db;
+            color: white;
+            text-align: center;
+        }
+        
+        .card-content {
+            padding: 0;
+        }
+        
+        /* 图片样式 */
+        .image-container {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .media-card:hover .image-container img {
+            transform: scale(1.05);
+        }
+        
+        /* 视频样式 */
+        .video-container {
+            width: 100%;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 宽高比 */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .image-container {
+                height: 250px;
+            }
+        }
+        
+        /* 底部信息 */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📷 我的媒体收藏</h1>
+            <p class="subtitle">精彩瞬间，永恒记忆</p>
+        </header>
+        
+        <main>
+            <div class="content-grid">
+                <!-- 第一张照片 -->
+                <div class="media-card">
+                    <div class="card-header">
+                        <h2>照片一</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="image-container">
+                            <img src="/test/p1.jpg" alt="第一张照片描述" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <p>美好的瞬间，值得珍藏</p>
+                    </div>
+                </div>
+                
+                <!-- 第二张照片 -->
+                <div class="media-card">
+                    <div class="card-header">
+                        <h2>照片二</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="image-container">
+                            <img src="/test/p2.jpg" alt="第二张照片描述" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <p>难忘的时刻，永恒回忆</p>
+                    </div>
+                </div>
+                
+                <!-- 视频 -->
+                <div class="media-card">
+                    <div class="card-header">
+                        <h2>精彩视频</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="video-container">
+                            <video controls poster="p1.jpg">
+                                <source src="/test/v1.mp4" type="video/mp4">
+                                您的浏览器不支持视频播放功能。
+                            </video>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <p>点击播放按钮观看视频</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2025 我的媒体展示 | 使用 HTML5 & CSS3 构建</p>
+        </footer>
+    </div>
+</body>
+</html>
